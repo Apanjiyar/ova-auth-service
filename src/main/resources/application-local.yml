@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_service_db_local
+    username: auth_service_app
+    password: auth_service_app
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+    show-sql: true
+    open-in-view: false
+
+app:
+  jwt:
+    secret: C273EE912296BBAD87849CA66390A4D37E27C0F53C82D723325E3488579E41B2

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://prod-server:5432/auth_prod_db
+    username: prod_user
+    password: prod_password
+
+app:
+  jwt:
+    secret: prodSecretKeyThatIsAtLeast32CharactersLongForHS256Algorithm789

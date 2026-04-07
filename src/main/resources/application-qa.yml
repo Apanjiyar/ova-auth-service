@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_qa_db
+    username: qa_user
+    password: qa_password
+
+app:
+  jwt:
+    secret: qaSecretKeyThatIsAtLeast32CharactersLongForHS256Algorithm456
