@@ -1,5 +1,7 @@
 package com.ms.authservice.enums;
 
 public enum RoleEnum {
-  ADMIN, USER,
+  SUPER_ADMIN,
+  ADMIN,
+  USER,
 }
