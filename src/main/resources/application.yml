@@ -1,3 +1,9 @@
 spring:
+  application:
+    name: auth-service
+
   profiles:
     active: local
+
+  config:
+    import: "configserver:http://localhost:8888"
