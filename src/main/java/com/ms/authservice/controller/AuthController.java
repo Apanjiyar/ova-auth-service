@@ -1,6 +1,7 @@
 package com.ms.authservice.controller;
 
 import com.ms.authservice.dto.ApiResponse;
+import com.ms.authservice.dto.AssignRolesRequest;
 import com.ms.authservice.dto.LoginRequest;
 import com.ms.authservice.dto.RegisterRequest;
 import com.ms.authservice.dto.RegisterResponse;
@@ -10,9 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.JobKOctets;
 import java.util.Map;
 
 @RestController
@@ -33,4 +34,15 @@ public class AuthController {
     String token = authService.login(request);
     return ResponseEntity.ok(ApiResponseUtil.success(Map.of("token", token), "Login successful"));
   }
+
+  @PostMapping("/assign-roles")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<ApiResponse<RegisterResponse>> assignRoles(
+          @Valid @RequestBody AssignRolesRequest request
+    ){
+    RegisterResponse response = authService.assignRoles(request);
+    return ResponseEntity.ok(ApiResponseUtil.success(response, "Role assigned successfully"));
+  }
+
+
 }

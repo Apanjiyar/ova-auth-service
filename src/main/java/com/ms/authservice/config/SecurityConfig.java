@@ -13,10 +13,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+  private static final List<String> PUBLIC_URIS = List.of(
+      "/auth/login",
+      "/auth/register"
+  );
 
   private final JwtFilter jwtFilter;
 
@@ -25,7 +32,7 @@ public class SecurityConfig {
 
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-          .requestMatchers("/auth/**").permitAll()
+          .requestMatchers(PUBLIC_URIS.toArray(new String[0])).permitAll()
           .anyRequest().authenticated()
         )
         .sessionManagement(session -> session

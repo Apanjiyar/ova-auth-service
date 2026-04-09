@@ -1,5 +1,6 @@
 package com.ms.authservice.service;
 
+import com.ms.authservice.dto.AssignRolesRequest;
 import com.ms.authservice.dto.LoginRequest;
 import com.ms.authservice.dto.RegisterRequest;
 import com.ms.authservice.dto.RegisterResponse;
@@ -9,6 +10,7 @@ import com.ms.authservice.enums.RoleEnum;
 import com.ms.authservice.exception.BadRequestException;
 import com.ms.authservice.exception.UnauthorizedException;
 import com.ms.authservice.exception.BusinessException;
+import com.ms.authservice.exception.ResourceNotFoundException;
 import com.ms.authservice.repository.RoleRepository;
 import com.ms.authservice.repository.UserRepository;
 import com.ms.authservice.util.ApplicationUtil;
@@ -16,7 +18,9 @@ import com.ms.authservice.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,5 +84,23 @@ public class AuthService {
       throw new UnauthorizedException("Invalid password");
     }
     return jwtUtil.generateToken(user);
+  }
+
+  public RegisterResponse assignRoles(AssignRolesRequest request) {
+    User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User", "username", request.getUsername()));
+
+    if (request.getRoles() == null || request.getRoles().isEmpty()) {
+      throw new BadRequestException("At least one role is required");
+    }
+
+    Set<Role> roles = new HashSet<>();
+    for (String roleName : request.getRoles()) {
+      Role role = roleRepository.findByName(roleName).orElseThrow(() -> new BadRequestException("Invalid role: " + roleName));
+      roles.add(role);
+    }
+
+    user.setRoles(roles);
+    User savedUser = userRepository.save(user);
+    return RegisterResponse.of(savedUser);
   }
 }
