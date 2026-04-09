@@ -1,0 +1,9 @@
+[
+  {
+    "username": "arunpanjiyar",
+    "email": "arunpanjiyar76@gmail.com",
+    "phone": "+91-9599135426",
+    "password": "Apanjiyar123@",
+    "roles": ["SUPER_ADMIN", "ADMIN", "USER"]
+  }
+]

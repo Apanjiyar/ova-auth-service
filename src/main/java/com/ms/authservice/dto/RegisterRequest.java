@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @EmailOrPhoneRequired
 public class RegisterRequest {
@@ -17,6 +19,8 @@ public class RegisterRequest {
   private String email;
 
   private String phone;
+
+  private Set<String> roles;
 
   @NotBlank(message = "Password is required")
   @ValidPassword
