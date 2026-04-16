@@ -103,4 +103,9 @@ public class AuthService {
     User savedUser = userRepository.save(user);
     return RegisterResponse.of(savedUser);
   }
+
+  public RegisterResponse getUserInfo(String username) {
+    User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    return RegisterResponse.of(user);
+  }
 }
