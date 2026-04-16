@@ -14,12 +14,15 @@ public class JwtUtil {
   @Value("${app.jwt.secret}")
   private String SECRET;
 
+  @Value("${app.jwt.expiration-time-ms}")
+  private Long EXPIRATION_TIME_MS;
+
   public String generateToken(UserDetails userDetails) {
     return Jwts.builder()
             .subject(userDetails.getUsername())
             .claim("roles", userDetails.getAuthorities())
             .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+            .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS))
             .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
             .compact();
   }
