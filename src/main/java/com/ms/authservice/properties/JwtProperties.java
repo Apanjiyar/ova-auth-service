@@ -1,4 +1,4 @@
-package com.ms.authservice.propertis;
+package com.ms.authservice.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

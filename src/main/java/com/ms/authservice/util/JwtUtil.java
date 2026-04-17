@@ -1,6 +1,6 @@
 package com.ms.authservice.util;
 
-import com.ms.authservice.propertis.JwtProperties;
+import com.ms.authservice.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;

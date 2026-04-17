@@ -11,7 +11,7 @@ import com.ms.authservice.exception.BadRequestException;
 import com.ms.authservice.exception.UnauthorizedException;
 import com.ms.authservice.exception.BusinessException;
 import com.ms.authservice.exception.ResourceNotFoundException;
-import com.ms.authservice.propertis.RedisPrefixProperties;
+import com.ms.authservice.properties.RedisPrefixProperties;
 import com.ms.authservice.repository.RoleRepository;
 import com.ms.authservice.repository.UserRepository;
 import com.ms.authservice.util.ApplicationUtil;
@@ -21,7 +21,6 @@ import com.ms.authservice.util.RedisUtilServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashSet;
