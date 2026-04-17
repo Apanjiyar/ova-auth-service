@@ -52,4 +52,10 @@ public class AuthController {
     return ResponseEntity.ok(ApiResponseUtil.success(response, "User info retrieved successfully"));
   }
 
+  @PostMapping("/logout")
+  public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader("Authorization") String authHeader) {
+    String response = authService.logout(authHeader);
+    return ResponseEntity.ok(ApiResponseUtil.success(null, response));
+  }
+
 }

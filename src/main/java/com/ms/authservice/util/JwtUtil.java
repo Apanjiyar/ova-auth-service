@@ -1,23 +1,25 @@
 package com.ms.authservice.util;
 
+import com.ms.authservice.propertis.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-  @Value("${app.jwt.secret}")
-  private String SECRET;
-
-  @Value("${app.jwt.expiration-time-ms}")
-  private Long EXPIRATION_TIME_MS;
+  private final JwtProperties jwtProperties;
 
   public String generateToken(UserDetails userDetails) {
+
+    final String SECRET = jwtProperties.secret();
+    final Long EXPIRATION_TIME_MS = jwtProperties.expirationTimeMs();
+
     return Jwts.builder()
             .subject(userDetails.getUsername())
             .claim("roles", userDetails.getAuthorities())
@@ -28,6 +30,7 @@ public class JwtUtil {
   }
 
   public String extractUsername(String token) {
+    final String SECRET = jwtProperties.secret();
     return Jwts.parser()
             .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
             .build()
@@ -38,5 +41,15 @@ public class JwtUtil {
 
   public boolean validateToken(String token, UserDetails userDetails) {
     return extractUsername(token).equals(userDetails.getUsername());
+  }
+
+  public Date getExpirationSeconds(String token) {
+    final String SECRET = jwtProperties.secret();
+    return Jwts.parser()
+            .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getExpiration();
   }
 }

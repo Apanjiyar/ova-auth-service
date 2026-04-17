@@ -11,18 +11,23 @@ import com.ms.authservice.exception.BadRequestException;
 import com.ms.authservice.exception.UnauthorizedException;
 import com.ms.authservice.exception.BusinessException;
 import com.ms.authservice.exception.ResourceNotFoundException;
+import com.ms.authservice.propertis.RedisPrefixProperties;
 import com.ms.authservice.repository.RoleRepository;
 import com.ms.authservice.repository.UserRepository;
 import com.ms.authservice.util.ApplicationUtil;
 import com.ms.authservice.util.JwtUtil;
+import com.ms.authservice.util.RedisUtilService;
+import com.ms.authservice.util.RedisUtilServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,8 @@ public class AuthService {
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtUtil jwtUtil;
+  private final RedisUtilService redisUtilService;
+  private final RedisPrefixProperties redisPrefixProperties;
 
   public RegisterResponse register(RegisterRequest req) {
     // Either email or phone is required for registering a user
@@ -107,5 +114,17 @@ public class AuthService {
   public RegisterResponse getUserInfo(String username) {
     User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     return RegisterResponse.of(user);
+  }
+
+  public String logout(String authHeader) {
+    String token = authHeader.substring(7);
+    Date expiration = jwtUtil.getExpirationSeconds(token);
+    long remainingTime = expiration.getTime() - System.currentTimeMillis();
+    if (remainingTime > 0) {
+      final String AUTH_TOKEN_BLACKLIST = redisPrefixProperties.blacklistToken();
+      String key = RedisUtilServiceImpl.buildKey(AUTH_TOKEN_BLACKLIST, token);
+      redisUtilService.set(key, "blacklisted", remainingTime, TimeUnit.MILLISECONDS);
+    }
+    return "Logout successful";
   }
 }
