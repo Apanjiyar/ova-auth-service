@@ -22,7 +22,8 @@ public class SecurityConfig {
 
   private static final List<String> PUBLIC_URIS = List.of(
       "/auth/login",
-      "/auth/register"
+      "/auth/register",
+      "/auth/refresh"
   );
 
   private final JwtFilter jwtFilter;

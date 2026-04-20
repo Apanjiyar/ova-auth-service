@@ -29,6 +29,20 @@ public class JwtUtil {
             .compact();
   }
 
+  public String getRefreshToken(UserDetails userDetails){
+
+    final String REFRESH_SECRET = jwtProperties.refreshToken();
+    final Long REFRESH_EXPIRATION_TIME_MS = jwtProperties.refreshExpirationTimeMs();
+
+    return Jwts.builder()
+            .subject(userDetails.getUsername())
+            .claim("roles", userDetails.getAuthorities())
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME_MS))
+            .signWith(Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes()))
+            .compact();
+  }
+
   public String extractUsername(String token) {
     final String SECRET = jwtProperties.secret();
     return Jwts.parser()
@@ -51,5 +65,28 @@ public class JwtUtil {
             .parseSignedClaims(token)
             .getPayload()
             .getExpiration();
+  }
+
+  public boolean validateTokenSignature(String token) {
+    try {
+      final String REFRESH_SECRET = jwtProperties.refreshToken();
+      Jwts.parser()
+              .verifyWith(Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes()))
+              .build()
+              .parseSignedClaims(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public String extractUsernameFromRefreshToken(String token) {
+    final String REFRESH_SECRET = jwtProperties.refreshToken();
+    return Jwts.parser()
+            .verifyWith(Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes()))
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
   }
 }

@@ -32,16 +32,27 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<ApiResponse<Map<String, Object>>> login(@Valid @RequestBody LoginRequest request) {
-    String token = authService.login(request);
-    return ResponseEntity.ok(ApiResponseUtil.success(Map.of("token", token), "Login successful"));
+  public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequest request) {
+    Map<String, String> response = authService.login(request);
+    return ResponseEntity.ok(ApiResponseUtil.success(response, "Login successful"));
+  }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<ApiResponse<Map<String, String>>> refresh(@RequestBody Map<String, String> request) {
+    Map<String, String> response = authService.refresh(request);
+    return ResponseEntity.ok(ApiResponseUtil.success(response, "Token refreshed successfully"));
+
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader("Authorization") String authHeader) {
+    String response = authService.logout(authHeader);
+    return ResponseEntity.ok(ApiResponseUtil.success(null, response));
   }
 
   @PostMapping("/assign-roles")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<ApiResponse<RegisterResponse>> assignRoles(
-          @Valid @RequestBody AssignRolesRequest request
-    ){
+  public ResponseEntity<ApiResponse<RegisterResponse>> assignRoles(@Valid @RequestBody AssignRolesRequest request){
     RegisterResponse response = authService.assignRoles(request);
     return ResponseEntity.ok(ApiResponseUtil.success(response, "Role assigned successfully"));
   }
@@ -51,11 +62,4 @@ public class AuthController {
     RegisterResponse response = authService.getUserInfo(userDetails.getUsername());
     return ResponseEntity.ok(ApiResponseUtil.success(response, "User info retrieved successfully"));
   }
-
-  @PostMapping("/logout")
-  public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader("Authorization") String authHeader) {
-    String response = authService.logout(authHeader);
-    return ResponseEntity.ok(ApiResponseUtil.success(null, response));
-  }
-
 }
